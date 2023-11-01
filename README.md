@@ -1,3 +1,5 @@
+Code with my own dictionary is in gosdt/examples.py . Code attempting to use doc2vec is in gosdt/doc2vec.py
+
 # Fast Sparse Decision Tree Optimization via Reference Ensembles
 
 This code creates optimized sparse decision trees. It is a direct competitor of CART[[3](#related-work)] and C4.5 [[6](#related-work)], as well as DL8.5[[1](#related-work)], BinOct[[7](#related-work)], and OSDT[[4](#related-work)]. Its advantage over CART and C4.5 is that the trees are globally optimized, not constructed just from the top down. This makes it slower than CART, but it provides better solutions. On the other hand, it tends to be faster than other optimal decision tree methods because it uses bounds to limit the search space, and uses a black box model (a boosted decision tree) to “guess” information about the optimal tree. It takes only seconds or a few minutes on most datasets.
