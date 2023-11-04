@@ -80,7 +80,7 @@ def get_thresholds(X, y, n_est, lr, d, backselect=True):
     return Xp, thresholds, h
 
 # compute the thresholds
-def compute_thresholds(X, y, n_est, max_depth) :
+def compute_thresholds(X, y, n_est, max_depth):
     # n_est, max_depth: GBDT parameters
     # set LR to 0.1
     lr = 0.1

@@ -1,6 +1,3 @@
-#must change line 19 in threshold_guess.py to log_loss instead of deviance
-#inspired by code from stack exchange 
-import re
 import pandas as pd
 import numpy as np
 import time
@@ -8,65 +5,18 @@ import pathlib
 from sklearn.ensemble import GradientBoostingClassifier
 from model.threshold_guess import compute_thresholds
 from model.gosdt import GOSDT
-from sklearn.preprocessing import MultiLabelBinarizer
-import functools as ft
 
-#create lookup dictionary of all keywords in data file
-txt = open(r"C:\Users\Owner\Downloads\gosdt-guesses-main\gosdt-guesses-main\experiments\datasets\keywords.txt")
-def getUniqueWords(allWords) : #create array of just unique keywords
-    uniqueWords = [] 
-    for i in allWords:
-        h = i.strip()
-        if h != "\n":
-            if not h in uniqueWords:
-                uniqueWords.append(h)
-    return uniqueWords
-  
-hi = getUniqueWords(txt) #run function
-#print(hi)
-my_list=[]
-j = 0
-for j in range(1, len(hi)+1): #create array of numbers
-    my_list.append(j)
-    j+1
-#print(my_list)
-
-lookup = dict(zip(hi, my_list)) #lookup dictionary where every keyword is assigned an integer value
-lookup['nan'] = 0
-lookup["'Green's function methods'"]=2553
-print(len(lookup))
-# read the file
-fields = ['publication_year', 'keywords']
-df = pd.read_csv(r"C:\Users\Owner\Downloads\gosdt-guesses-main\gosdt-guesses-main\experiments\datasets\test.csv")
-#number = sum(lookup.get(word.lower(), 0) * freq for word, freq in collections.Counter(df).items())
-
-X = df.iloc[:,:-1].values 
-y = df.iloc[:,-1].values
+# read the dataset
+df = pd.read_csv("experiments/datasets/fico.csv")
+X, y = df.iloc[:,:-1].values, df.iloc[:,-1].values
 h = df.columns[:-1]
-#print(lookup)
-for h in range (0, len(y)):
-    words = re.split(',', str(y[h]))
-    #ww = []
-    #for j in words:
-        #j.replace(" '", "'")
-    #print(words)
-    digits = [lookup[word] for word in words]
-    y[h] = digits
-#print(res)
-print(X)
-print(y)
 
-y=MultiLabelBinarizer().fit_transform(X)
-X=X.transpose()
-frames = [df]
-
-df = pd.concat(frames)
 # GBDT parameters for threshold and lower bound guesses
 n_est = 40
 max_depth = 1
 
 # guess thresholds
-X = pd.DataFrame(X, columns=[h])
+X = pd.DataFrame(X, columns=h)
 print("X:", X.shape)
 print("y:",y.shape)
 X_train, thresholds, header, threshold_guess_time = compute_thresholds(X, y, n_est, max_depth)
