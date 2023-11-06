@@ -51,7 +51,7 @@ def calculate_average_decade(years):
 y_encoded = [calculate_average_decade(year) for year in y]
 
 ## GBDT parameters for threshold and lower bound guesses - adjust parameters to get better accuracy
-n_est = 20
+n_est = 60
 max_depth = 3
 
 ## Create unique column names for X
@@ -67,6 +67,29 @@ print("y:", len(y_encoded))  # Labels
 clf = GradientBoostingClassifier(n_estimators=n_est, max_depth=max_depth, random_state=42)
 clf.fit(X_encoded_df, y_encoded)
 
+
+## Explore feature importance
+feature_importance = clf.feature_importances_
+
+# Create a list of unique decades
+unique_decades = sorted(set(y_encoded))
+
+#y_list = y_encoded.tolist()
+y_list = list(y_encoded)
+unique_decades = sorted(set(y_list))
+
+## Group data by decades and analyze feature importance over time
+for decade in unique_decades:
+	indices = [i for i in range(len(y_list)) if y_list[i] == decade]
+	if indices:
+		feature_importance_decade = [feature_importance[i] for i in indices if i < len(feature_importance)]
+		#feature_importance_decade = [feature_importance[i] for i in indices]
+		keywords_decade = [X[i] for i in indices]
+		print(f"Decade {decade}-{decade + 10}:")
+		print("Keywords:", keywords_decade)
+		print("Feature Importance:", feature_importance_decade)
+			
+			
 ## Guess thresholds
 X_train, thresholds, header, threshold_guess_time = compute_thresholds(X_encoded_df, y_encoded, n_est, max_depth)
 y_train = pd.DataFrame(y_encoded)
@@ -93,7 +116,7 @@ pd.DataFrame(warm_labels, columns=["class_labels"]).to_csv(labelpath, header="cl
 config = {
     "regularization": 0.0002, #to adjust from 0.001-0.0002 
     "depth_budget": 5,
-    "time_limit": 60,
+    "time_limit": 200,
     "warm_LB": True,
     "path_to_labels": labelpath,
     "similar_support": False,
